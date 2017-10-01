@@ -6,6 +6,7 @@
 #define KEYLOGD_KEYBOARD_H
 
 #include <cstdint>
+#include <string>
 
 class Keyboard {
 public:
@@ -14,7 +15,7 @@ public:
 
     uint8_t* get_key_status(); // Returns current keyboard status
 private:
-    const char* get_event_device(); // Returns the /dev/input/eventX name for the keyboard
+    std::string get_event_device(); // Returns the /dev/input/eventX name for the keyboard
     int keyboard_fd; // File descriptor for keyboard
 };
 

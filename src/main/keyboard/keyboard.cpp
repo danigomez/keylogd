@@ -3,6 +3,8 @@
 //
 
 #include "keyboard.h"
+#include "../utils.h"
+
 #include <syslog.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -12,11 +14,15 @@
 #include <string>
 #include <cerrno>
 #include <cstdlib>
+#include <cstdio>
+#include <stdexcept>
+
 
 Keyboard::Keyboard() {
-    const char* eventName = this->get_event_device();
+    std::string event = this->get_event_device();
+
     std::string device = "/dev/input/";
-    device.append(eventName);
+    device.append(event);
 
     int fd = open(device.c_str(), O_RDONLY);
 
@@ -39,8 +45,19 @@ Keyboard::~Keyboard() {
     }
 }
 
-const char* Keyboard::get_event_device() {
-    return "event4";
+std::string Keyboard::get_event_device() {
+
+    try {
+
+        std::string result = exec("grep -E 'Handlers|EV=' /proc/bus/input/devices | grep -B1 'EV=120013' | grep -Eo 'event[0-9]+'");
+        return result;
+
+    } catch (std::runtime_error &s) {
+        syslog(LOG_ERR, "There was an error while getting event device");
+        exit(EXIT_FAILURE);
+    }
+
+
 }
 
 uint8_t* Keyboard::get_key_status() {
